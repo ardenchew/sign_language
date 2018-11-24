@@ -51,11 +51,11 @@ class SL_Dataset_Train(Dataset):
         return data
     
 class SL_Dataset_Test(Dataset):
-    def __init__(self, image_dir, image_ext image_transforms=None):
+    def __init__(self, image_dir, image_ext, image_transforms=None):
         
         assert(os.path.exists(image_dir))
         
-        self.data = self.gather_files(image_dir)
+        self.data = self.gather_files(image_dir, image_ext)
         self.image_transforms = image_transforms
 
     def __len__(self):
