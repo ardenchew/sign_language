@@ -4,23 +4,28 @@ import time
 import numpy as np
 import argschema
 import os
+import argparse
 
+from sl_loader import SL_Dataset_Train
 #from networks import model
-#from networks import Dataset
+
+def get_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--image_dir', type=str, default='')
+    parser.add_argument('--label_file', type=str, default='', help='file with image names and label probabilities')
+    parser.add_argument('--model_prefix', type=str, default='untitled', help='what to call the model')
+    parser.add_argument('--model_save_dir', type=str, default='./', help='where to save the model')
+    parser.add_argument('--num_iter', type=int, default=100)
+    parser.add_argument('--gpu', type=bool, default=True, help='use gpu?')
+    parser.add_argument('--learning_rate', type=float, default=0.1)
+    parser.add_argument('--epochs', type=int, default=1)
+    args = parser.parse_args()
+    return args
 
 class TrainNetwork:
     
-    def __init__(self):
-        self.args = {
-                'image_dir': 'images/',
-                'info_file': 'info.txt',
-                'model_prefix': 'model',
-                'model_save_dir': './',
-                'num_iter': 100,
-                'gpu': 'True',
-                'learning_rate': 0.1,
-                'epochs': 1
-                }
+    def __init__(self, args):
+        self.args = args
     
     def train(self, model, dataset, optimizer, loss_fn, epoch):
         for it in range(self.args['num_iter']):
@@ -38,7 +43,7 @@ class TrainNetwork:
                 optimizer.zero_grad()
 
                 output_batch = model(image_batch)
-                loss = loss_fn(output_batch, torch.max(label_batch,1)[1])
+                loss = loss_fn(output, label_batch) #todo manage loss
                 loss.backward()
                 optimizer.step()
 
@@ -65,12 +70,12 @@ class TrainNetwork:
         #color_jitter = torchvision.transforms.ColorJitter(brightness=0.3,contrast=0.3,saturation=0,hue=0)
         image_transforms = []
 
-        #TODO
-        #loader = Dataset(
-        #    self.args['image_dir'],
-        #    self.args['info_file'],
-        #    image_transforms=image_transforms
-        #)
+
+        loader = SL_Dataset_Train(
+            self.args['image_dir'],
+            self.args['label_file'],
+            image_transforms=image_transforms
+        )
 
         dataset = torch.utils.data.DataLoader(
             loader,
@@ -90,5 +95,6 @@ class TrainNetwork:
             )
 
 if __name__=='__main__':
-    mod = TrainNetwork(input_data=example)
-    mod.run()
+    args = get_args()
+    model = TrainNetwork(args)
+    model.run()
