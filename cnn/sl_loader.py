@@ -35,7 +35,7 @@ class SL_Dataset_Train(Dataset):
         with open(label_file, 'r') as f:
             for i,line in enumerate(f):
                 line_data = line.replace('\n','').split(' ')
-                assert(len(line_data) == 26)
+                assert(len(line_data) == 25)
                 
                 img_file = line_data.pop(0)
                 img_file = os.path.join(image_dir, img_file)
