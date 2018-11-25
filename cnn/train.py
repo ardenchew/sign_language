@@ -4,6 +4,7 @@ import time
 import numpy as np
 import os
 import argparse
+from torch.autograd import Variable
 
 from sl_loader import SL_Dataset_Train
 import networks
@@ -39,7 +40,10 @@ class TrainNetwork:
                 if self.args.gpu: 
                     image_batch = image_batch.cuda()
                     label_batch = label_batch.cuda()
-
+                
+                image_batch = Variable(image_batch)
+                label_batch = Variable(label_batch)
+                
                 optimizer.zero_grad()
 
                 output_batch = model(image_batch)
@@ -63,7 +67,7 @@ class TrainNetwork:
          
         #data normalization pre processing if necessary
         grayscale = torchvision.transforms.Grayscale()
-        resize = torchvision.transforms.Resize(512)
+        resize = torchvision.transforms.Resize(28)
         #horizontal = torchvision.transforms.RandomHorizontalFlip(p=0.5)
         #vertical = torchvision.transforms.RandomVerticalFlip(p=0.5)
         #rotate = torchvision.transforms.RandomRotation(180)
