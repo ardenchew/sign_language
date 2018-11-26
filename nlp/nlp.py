@@ -1,6 +1,5 @@
 import numpy as np
 from itertools import islice
-from nltk.corpus import gutenberg
 from nltk.corpus import brown
 import os.path
 
@@ -52,10 +51,12 @@ def get_next_letter_probs(prev_letters):
     row = None
     prev_letters = prev_letters[-(MAX_N - 1):]
     n = len(prev_letters) + 1
-    print(n)
     index_list = []
     for letter in prev_letters:
         index_list.append(get_letter_index(letter))
     index_list = tuple(index_list)
     row = generate_ngram_probs(words, n=n)[index_list]
-    return row / np.sum(row)
+    row = row / np.sum(row)
+    row = np.delete(row, get_letter_index('j'))
+    row = np.delete(row, get_letter_index('z') - 1)
+    return row
